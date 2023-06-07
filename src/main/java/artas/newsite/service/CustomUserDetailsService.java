@@ -29,7 +29,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        /*try {*/
             Optional<PersonEntity> person = personRepository.findByUsername(login);
 
             if (person.isEmpty()) {
@@ -39,13 +38,12 @@ public class CustomUserDetailsService implements UserDetailsService {
             Set<RoleEntity> roles = person.get().getPersonRoles().stream()
                     .map(PersonRoleEntity::getRole)
                     .collect(Collectors.toSet());
+
             out.println(person.get().getUsername());
             out.println(person.get().getPassword());
             out.println(roles.toString());
+
             return new User(person.get().getUsername(), person.get().getPassword(), getAuthorities(roles));
-       /* } catch (Exception e) {
-            throw new UsernameNotFoundException("опять что-то не так " + e.getMessage());
-        }*/
     }
 
     private Collection<? extends GrantedAuthority> getAuthorities(Set<RoleEntity> roles) {

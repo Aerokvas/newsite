@@ -5,7 +5,6 @@ import artas.newsite.entities.PersonRoleEntity;
 import artas.newsite.entities.RoleEntity;
 import artas.newsite.repositories.PersonRepository;
 import artas.newsite.repositories.RoleRepository;
-import org.hibernate.Hibernate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,13 +23,6 @@ public class PersonService {
         this.personRepository = personRepository;
         this.roleRepository = roleRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    }
-
-    public PersonEntity findUserById(int userId) {
-        Optional<PersonEntity> userFromDb = personRepository.findById(userId);
-        PersonEntity user = userFromDb.orElse(new PersonEntity());
-        Hibernate.initialize(user.getPersonRoles());
-        return user;
     }
 
     public int findMaxAccountCountById(Integer id) {

@@ -19,4 +19,8 @@ public class TransferInformationService {
             out.println("Ошибка в transferMoney " + e.getMessage());
         }
     }
+
+    public void errorChecks() {
+
+    }
 }
