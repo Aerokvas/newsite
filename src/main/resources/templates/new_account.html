@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:tf="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Создание счета</title>
+</head>
+<body>
+<div th:if="${errorMessage}">
+    <p style="color:green" th:text="${errorMessage}"></p>
+</div>
+<div>
+    <form th:action="@{/profile_account/new_account}" method="post">
+        <button type="submit">Открыть счет</button>
+    </form>
+    <a href="/profile_account">Назад</a>
+</div>
+</body>
+</html>

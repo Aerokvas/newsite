@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Профиль</title>
+</head>
+<body>
+<div>
+    <h3 style="text-align: center">Счета</h3>
+    <div th:if="${error}">
+        <p style="color:green" th:text="${error}"></p>
+    </div>
+    <div th:if="${accounts}">
+        <div th:each="account : ${accounts}">
+            <div>
+                <p><strong>Номер: </strong><span th:text="${account.nameNumber}"></span></p>
+                <p><strong>Сумма: </strong><span th:text="${account.amount}"></span></p>
+            </div>
+            <hr/>
+        </div>
+    </div>
+</div>
+<div>
+    <p><a href="/profile_account/transfer">Переводы</a></p>
+    <p><a href="/profile_account/new_account">Открыть новый счет</a></p>
+    <a href="/home">Назад</a>
+</div>
+</body>
+</html>

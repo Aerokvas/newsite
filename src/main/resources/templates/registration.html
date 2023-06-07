@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>Регистрация</title>
+</head>
+
+<body>
+<div>
+    <form th:action="@{/registration}" th:method="post" th:object="${userForm}">
+        <h2>Регистрация</h2>
+        <div>
+            <p>Логин: <input type="text" th:field="*{username}"/></p>
+            <div th:if="${usernameError}">
+                <p style="color:red">Такой пользователь уже существует.</p>
+            </div>
+        </div>
+        <div>
+            <p>Пароль: <input type="password" th:field="*{password}"/></p>
+            <div th:if="${passwordError}">
+                <p style="color:red">Пароли не сходятся.</p>
+            </div>
+        </div>
+        <div>
+            <p>Повторите пароль: <input type="password" th:field="*{confirmPassword}"/></p>
+        </div>
+        <button type="submit">Создать аккаунт</button>
+    </form>
+    <a href="/login">Назад</a>
+</div>
+</body>
+</html>
