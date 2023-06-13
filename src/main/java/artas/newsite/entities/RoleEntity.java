@@ -22,14 +22,11 @@ public class RoleEntity  {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
+
     @Basic
     @Column(name = "name")
     private String name;
+
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
     private Set<PersonRoleEntity> personRoles = new HashSet<>();
-/*
-    @Override
-    public String getAuthority() {
-        return null;
-    }*/
 }

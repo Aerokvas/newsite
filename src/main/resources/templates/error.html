@@ -6,5 +6,9 @@
 </head>
 <body>
     <h1 th:text="${error}"></h1>
+    <div th:if="${message}">
+        <p th:text="${message}" style="color:red"></p>
+    </div>
+    <p href="/home">Главная</p>
 </body>
 </html>

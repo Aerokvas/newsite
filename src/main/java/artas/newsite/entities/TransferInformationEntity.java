@@ -1,6 +1,7 @@
 package artas.newsite.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,17 +20,20 @@ public class TransferInformationEntity {
     @Id
     @Column(name = "id")
     private int id;
-    @Basic
+
     @Column(name = "amount")
     private BigDecimal amount;
-    @Transient
+
+    @Column(name = "fromaccount")
     private String fromAccountNumber;
-    @ManyToOne
-    @JoinColumn(name = "fromaccount", referencedColumnName = "id")
-    private BankAccountEntity bankAccountByFromaccount;
-    @Transient
+
+    @Column(name = "toaccount")
     private String toAccountNumber;
-    @ManyToOne
-    @JoinColumn(name = "toaccount", referencedColumnName = "id")
-    private BankAccountEntity bankAccountByToaccount;
+
+    public String toString(){
+        return "[" + getClass().getSimpleName() + "]" + ": id - " + getId()
+                + "; fromAccount - " + getFromAccountNumber()
+                + "; toAccount - " + getToAccountNumber()
+                + "; amount - " + getAmount();
+    }
 }

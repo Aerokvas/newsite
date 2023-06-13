@@ -40,6 +40,6 @@ public class RegistrationController {
             return "registration";
         }
 
-        return "redirect:/home";
+        return "redirect:/login";
     }
 }

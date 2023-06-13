@@ -9,9 +9,10 @@
 <body>
 <h1 th:text="'Привет ' + ${username}"></h1>
 <p th:text="'Сегодня ' + ${day} + ' и рандомное число - ' + ${number} + '!' "/>
-<div>
-    <a href="/profile_account">Перейти в профиль</a>
+<div th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+    <a href="/admin">Админка</a>
 </div>
+    <a href="/profile_account">Перейти в профиль</a>
 <form th:action="@{/logout}" method="post">
     <input type="submit" value="Sign Out"/>
 </form>

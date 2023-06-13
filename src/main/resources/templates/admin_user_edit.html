@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link media="all" rel="stylesheet" th:href="@{/css/edit.css}" type="text/css"/>
+</head>
+<body>
+<h3>Редактирование ролей пользователя</h3>
+<form action="#" th:action="@{/admin/edit/{id}(id=${person.id})}" th:object="${person}" method="post">
+    <table>
+        <tr>
+            <th>Доступные роли</th>
+            <th>Текущие роли пользователя</th>
+        </tr>
+        <tr>
+            <td>
+                <label>
+                    <select multiple="multiple" th:field="*{personRoles}" th:size="${availableRoles.size}">
+                        <option th:each="role : ${availableRoles}" th:value="${role.id}" th:text="${role.name}"
+                                th:classappend="${person.personRoles.contains(role) ? 'current-role' : 'available-role'}"
+                                th:attr="title=${role.name + (person.personRoles.contains(role) ? ' (Текущая роль)' : '')}">
+                        </option>
+                    </select>
+                </label>
+            </td>
+            <td>
+                <label>
+                    <select multiple="multiple" th:field="*{personRoles}" th:size="${userRoles.size}">
+                        <option th:each="role : ${userRoles}" th:value="${role.role.id}" th:text="${role.role.name}"
+                                th:classappend="${person.personRoles.contains(role) ? 'current-role' : 'available-role'}"
+                                th:attr="title=${role.role.name + (person.personRoles.contains(role) ? ' (Текущая роль)' : '')}">
+                        </option>
+                    </select>
+                </label>
+            </td>
+        </tr>
+    </table>
+    <div th:if="${errorEditing}" style="color:red" th:text="${errorEditing}"></div>
+    <input type="submit" value="Сохранить" onclick="return confirm('Вы уверены, что хотите добавить роли?');"/>
+</form>
+<a href="/admin">Назад</a>
+</body>
+</html>

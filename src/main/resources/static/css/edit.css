@@ -1,0 +1,11 @@
+.role-label {
+    font-weight: bold;
+}
+
+.current-role {
+    color: red;
+}
+
+.available-role {
+    color: green;
+}

@@ -6,38 +6,54 @@
 </head>
 <body>
 <h3>Перевод средств</h3>
-<div>
-    <form th:action="@{/profile_account/transfer}" th:method="post" th:object="${transferInformation}">
-        <p>Отправитель:
-            <select th:field="*{fromAccountNumber}">
-                <option th:each="account : ${accounts}" th:value="${account.nameNumber}" th:text="${account.nameNumber}"></option>
-            </select>
-        </p>
-        <div>
-            <p>Получатель: <input th:field="*{toAccountNumber}" required/></p>
-        </div>
-        <div>
-            <p>Сумма: <input th:field="*{amount}" type="number" min="0" step="0.01" required/></p>
-        </div>
-        <div>
-            <button type="submit">Перевести</button>
-        </div>
-        <div th:if="${errorMessage}" style="color: red" th:text="${errorMessage}"></div>
-        <div th:if="${successMessage}" style="color: green" th:text="${successMessage}"></div>
-    </form>
+<div th:if="${accounts.isEmpty()}">
+    <p>У вас нет аккаунтов.
+        <a href="/profile_account/new_account">Оформить счет</a>
+    </p>
+    <a href="/profile_account">Назад</a>
 </div>
-<hr/>
-<h3>Счета</h3>
-<table>
-    <tr>
-        <th>Номер</th>
-        <th>Сумма</th>
-    </tr>
-    <tr th:each="account : ${accounts}">
-        <td th:text="${account.nameNumber}"></td>
-        <td th:text="${account.amount}"></td>
-    </tr>
-</table>
-<a href="/profile_account">Назад</a>
+<div th:unless="${accounts.isEmpty()}">
+    <div>
+        <form th:action="@{/profile_account/transfer}" th:method="post" th:object="${transferInformation}">
+            <div>
+                <p>Отправитель:
+                    <select th:field="*{fromAccountNumber}">
+                        <option th:each="account : ${accounts}" th:value="${account.nameNumber}"
+                                th:text="${account.nameNumber}"></option>
+                    </select>
+                </p>
+            </div>
+            <div>
+                <p>Получатель: <input th:field="*{toAccountNumber}" required/></p>
+            </div>
+            <div>
+                <p>Сумма: <input th:field="*{amount}" type="number" min="0" step="0.01" required/></p>
+
+            </div>
+            <div th:if="${errorMessage}">
+                <p th:text="${errorMessage}" style="color:red"></p>
+            </div>
+            <div th:if="${successMessage}">
+                <p th:text="${successMessage}" style="color: green"></p>
+            </div>
+            <div>
+                <button type="submit">Перевести</button>
+            </div>
+        </form>
+    </div>
+    <hr/>
+    <h3>Счета</h3>
+    <table th:if="${!accounts.isEmpty()}">
+        <tr>
+            <th>Номер</th>
+            <th>Сумма</th>
+        </tr>
+        <tr th:each="account : ${accounts}">
+            <td th:text="${account.nameNumber}"></td>
+            <td th:text="${account.amount}"></td>
+        </tr>
+    </table>
+    <a href="/profile_account">Назад</a>
+</div>
 </body>
 </html>

@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.Collection;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -20,15 +20,16 @@ public class BankAccountEntity {
     @Id
     @Column(name = "id")
     private int id;
-    @Basic
-    @Column(name = "amount")
-    private BigDecimal amount;
-    @Basic
-    @Column(name = "person_id")
-    private Integer userId;
-    @Basic
+
     @Column(name = "name_number")
     private String nameNumber;
+
+    @Column(name = "amount")
+    private BigDecimal amount;
+
+    @ManyToOne
+    @JoinColumn(name = "person_id")
+    private PersonEntity personId;
 
     public synchronized void takeValue(BigDecimal value) {
         amount = amount.subtract(value);
@@ -36,5 +37,12 @@ public class BankAccountEntity {
 
     public synchronized void putValue(BigDecimal value) {
         amount = amount.add(value);
+    }
+
+    public String toString(){
+        return "[" + getClass().getSimpleName() + "]"
+                + ": id - " + getId()
+                + "; nameNumber - " + getNameNumber()
+                + "; personId - " + getPersonId().getId();
     }
 }

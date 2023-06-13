@@ -27,6 +27,13 @@ public class CustomErrorController implements ErrorController {
                 model.addAttribute("status", status);
             }
 
+            if (statusCode == HttpStatus.METHOD_NOT_ALLOWED.value()) {
+                model.addAttribute("error", status
+                        + " - што.");
+                model.addAttribute("status", status);
+                model.addAttribute("message", message);
+            }
+
             if (statusCode == HttpStatus.FORBIDDEN.value()) {
                 model.addAttribute("error", status
                         + " - тебе сюда нельзя, сталкер.");

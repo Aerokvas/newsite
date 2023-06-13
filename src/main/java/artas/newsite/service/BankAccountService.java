@@ -2,10 +2,11 @@ package artas.newsite.service;
 
 import artas.newsite.entities.BankAccountEntity;
 import artas.newsite.entities.PersonEntity;
+import artas.newsite.entities.TransferInformationEntity;
 import artas.newsite.repositories.BankAccountRepository;
 import artas.newsite.repositories.PersonRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -27,8 +28,8 @@ public class BankAccountService {
 
     public List<BankAccountEntity> getBankAccountsByUsername(String username) {
         Optional<PersonEntity> userFromDB = personRepository.findByUsername(username);
-        out.println(accountRepository.getBankAccountEntitiesByUserId(userFromDB.get().getId()));
-        return accountRepository.getBankAccountEntitiesByUserId(userFromDB.get().getId());
+        out.println(accountRepository.getBankAccountEntitiesByPersonId(userFromDB.get()));
+        return accountRepository.getBankAccountEntitiesByPersonId(userFromDB.get());
     }
 
     public BankAccountEntity getBankAccountByNameNumber(String nameNumber) {
@@ -36,7 +37,7 @@ public class BankAccountService {
         return accountRepository.getBankAccountEntityByNameNumber(nameNumber);
     }
 
-    public boolean createBankAccount(String username) {
+    public boolean createBankAccount(String username, Model model) {
         try {
             Optional<PersonEntity> userFromDB = personRepository.findByUsername(username);
 
@@ -46,21 +47,29 @@ public class BankAccountService {
                 if (!generateAccountNumber(username).equals("-1")) {
                     bankAccount.setNameNumber(generateAccountNumber(username));
                     bankAccount.setAmount(BigDecimal.valueOf(1000));
-                    bankAccount.setUserId(userFromDB.get().getId());
-                    accountRepository.save(bankAccount);
-                    out.println(bankAccount);
-                    userFromDB.get().setMaxAccountCount(userFromDB.get().getMaxAccountCount() + 1);
-                    personRepository.save(userFromDB.get());
+                    bankAccount.setPersonId(userFromDB.get());
 
+                    userFromDB.get().setMaxAccountCount(userFromDB.get().getMaxAccountCount() + 1);
+                    out.println("До сохранения - " + bankAccount);
+                    accountRepository.save(bankAccount);
+                    out.println("После сохранения - " + bankAccount);
+                    personRepository.save(userFromDB.get());
                     return true;
-                } else
-                    return false;
+                }
             }
         } catch (Exception e) {
             out.println("SaveAccount - " + e.getMessage());
         }
-
         return false;
+    }
+
+    public void getProfile(String username, Model model) {
+        List<BankAccountEntity> accounts = getBankAccountsByUsername(username);
+
+        if (!accounts.isEmpty())
+            model.addAttribute("accounts", accounts);
+        else
+            model.addAttribute("errorMessage", "У вас нет счета. Для оформления счета нажмите кнопку <<Открыть новый счет>> ниже.");
     }
 
     private String generateAccountNumber(String username) {
@@ -69,7 +78,7 @@ public class BankAccountService {
         int accountCode = 0;
         int maxAccountCode = 0;
 
-        if (personRepository.findByUsername(username).isPresent()){
+        if (personRepository.findByUsername(username).isPresent()) {
             userCode = personRepository.findByUsername(username).get().getId();
             maxAccountCode = personService.findMaxAccountCountById(userCode);
         }

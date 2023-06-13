@@ -11,22 +11,32 @@
         <h2>Регистрация</h2>
         <div>
             <p>Логин: <input type="text" th:field="*{username}"/></p>
+            <div th:if="${#fields.hasErrors('username')}">
+                <p th:errors="*{username}" style="color:red"></p>
+            </div>
             <div th:if="${usernameError}">
-                <p style="color:red">Такой пользователь уже существует.</p>
+                <p th:text="${usernameError}" style="color:red"></p>
             </div>
         </div>
         <div>
             <p>Пароль: <input type="password" th:field="*{password}"/></p>
+            <div th:if="${#fields.hasErrors('password')}">
+                <p th:errors="*{password}" style="color:red"></p>
+            </div>
             <div th:if="${passwordError}">
-                <p style="color:red">Пароли не сходятся.</p>
+                <p th:text="${passwordError}" style="color:red"></p>
             </div>
         </div>
         <div>
             <p>Повторите пароль: <input type="password" th:field="*{confirmPassword}"/></p>
+            <div th:if="${#fields.hasErrors('confirmPassword')}">
+                <p th:errors="*{confirmPassword}" style="color:red"></p>
+            </div>
         </div>
         <button type="submit">Создать аккаунт</button>
     </form>
     <a href="/login">Назад</a>
 </div>
 </body>
+
 </html>

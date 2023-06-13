@@ -1,6 +1,5 @@
 package artas.newsite.config;
 
-import artas.newsite.repositories.PersonRepository;
 import artas.newsite.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -8,10 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
@@ -25,6 +23,7 @@ public class WebSecurityConfig {
     public WebSecurityConfig(@Qualifier("customPersonDetails") CustomUserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
+
     @Bean
     public HandlerMappingIntrospector mvcHandlerMappingIntrospector() {
         return new HandlerMappingIntrospector();
@@ -54,7 +53,7 @@ public class WebSecurityConfig {
                         .defaultSuccessUrl("/home", true)
                         .permitAll()
                 )
-                .logout((logout) -> logout.permitAll())
+                .logout(LogoutConfigurer::permitAll)
                 .authenticationManager(authenticationManager);
         return http.build();
     }

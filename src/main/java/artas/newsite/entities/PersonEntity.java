@@ -1,14 +1,13 @@
 package artas.newsite.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Setter
 @Getter
@@ -22,19 +21,29 @@ public class PersonEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
-    @Basic
+
     @Column(name = "login")
+    @NotBlank(message = "Логин обязателен.")
+    @Size(min=5, message = "Логин должен быть от 5 символов.")
     private String username;
-    @Basic
+
     @Column(name = "password")
+    @NotBlank(message = "Пароль обязателен.")
+    @Size(min=5, message = "Пароль должен быть от 5 символов.")
     private String password;
-    @Basic
+
+    @Transient
+    @NotBlank(message = "Повторный пароль обязателен.")
+    private String confirmPassword;
+
     @Column(name = "max_account_count")
     private Integer maxAccountCount;
-    @Transient
-    private String confirmPassword;
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "person", cascade = CascadeType.ALL)
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PersonRoleEntity> personRoles = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "personId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<BankAccountEntity> bankAccounts = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
@@ -53,7 +62,12 @@ public class PersonEntity {
 
     @Override
     public String toString(){
-        return getId() + " " + getUsername() + " " + getPassword() + " " + getPersonRoles() + " " + getMaxAccountCount();
+        return "[" + getClass().getSimpleName() + "]"
+                + ": id - " + getId()
+                + "; login - " + getUsername()
+                + "; password - " + getPassword()
+                + "; accounts - " + getMaxAccountCount()
+                + "; role - " + getPersonRoles();
     }
 
 }

@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.math.BigDecimal;
 import java.security.Principal;
 import java.util.List;
 
@@ -26,29 +25,19 @@ import static java.lang.System.out;
 public class AccountProfileController implements WebMvcConfigurer {
     private final BankAccountService bankAccountService;
     private final TransferInformationService transferInformationService;
-    private final TransferInformationRepository transferInformationRepository;
     private final Log logger = LogFactory.getLog(getClass());
-    private BankAccountEntity fromAccount;
-    private BankAccountEntity toAccount;
-    private BigDecimal amount;
 
     public AccountProfileController(BankAccountService bankAccountService, TransferInformationService transferInformationService, TransferInformationRepository transferInformationRepository) {
         this.bankAccountService = bankAccountService;
         this.transferInformationService = transferInformationService;
-        this.transferInformationRepository = transferInformationRepository;
     }
 
     @GetMapping("/profile_account")
     public String userProfile(Principal person, Model model) {
         try {
-            List<BankAccountEntity> accounts = bankAccountService.getBankAccountsByUsername(person.getName());
-
-            if (!accounts.isEmpty())
-                model.addAttribute("accounts", accounts);
-            else
-                model.addAttribute("error", "У вас ничего нет");
-        } catch (Exception e){
-            model.addAttribute("error", "У вас ничего нет");
+            bankAccountService.getProfile(person.getName(), model);
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "У вас ничего нет");
             out.println(e.getMessage());
         }
 
@@ -56,91 +45,42 @@ public class AccountProfileController implements WebMvcConfigurer {
     }
 
     @GetMapping("/profile_account/new_account")
-    public String showTransferForm() {
+    public String showNewAccountPage() {
         return "new_account";
     }
 
     @PostMapping("/profile_account/new_account")
-    public String createAccount(Principal principal, Model model) {
-        String username = principal.getName();
-        boolean isAccountCreated = bankAccountService.createBankAccount(username);
-
-        if (isAccountCreated) {
+    public String createAccount(Principal person, Model model) {
+        if (bankAccountService.createBankAccount(person.getName(), model)) {
             return "redirect:/profile_account";
         } else {
-            model.addAttribute("errorMessage", "Ошибка при создании аккаунта. Попробуйте снова.");
+            model.addAttribute("errorMessage", "Произошла ошибка при создании счета. Повторите попытку и если проблема не решилась, то обратитесь в тех. поддержку.");
             return "new_account";
         }
     }
 
     @GetMapping("/profile_account/transfer")
-    public String showTransferForm(Principal person, Model model) {
-        logger.info("Имя пользователя " + person.getName());
-
+    public String showNewAccountPage(Principal person, Model model) {
         List<BankAccountEntity> accounts = bankAccountService.getBankAccountsByUsername(person.getName());
-        model.addAttribute("accounts", accounts);
-        model.addAttribute("transferInformation", new TransferInformationEntity());
 
-        logger.info("Информация о переводе 1 " + model.getAttribute("transferInformation"));
+        model.addAttribute("transferInformation", new TransferInformationEntity());
+        model.addAttribute("accounts", accounts);
+
         return "transfer";
     }
 
     @PostMapping("/profile_account/transfer")
     public String processTransfer(@ModelAttribute("transferInformation") @Valid TransferInformationEntity transferInformation,
-                                  Principal person, BindingResult bindingResult, Model model) {
-        logger.info("Начало метода " + transferInformation);
+                                  Principal person, Model model) {
+        logger.info("Информация о переводе 1 " + transferInformation);
         try {
-            fromAccount = bankAccountService.getBankAccountByNameNumber(transferInformation.getFromAccountNumber());
-            transferInformation.setBankAccountByFromaccount(fromAccount);
-
-            toAccount = bankAccountService.getBankAccountByNameNumber(transferInformation.getToAccountNumber());
-            transferInformation.setBankAccountByToaccount(toAccount);
-
-            amount = transferInformation.getAmount();
-
-            logger.info("После объявления аккаунтов " + transferInformation);
-
-            if (bindingResult.hasErrors()) {
-                List<BankAccountEntity> accounts = bankAccountService.getBankAccountsByUsername(person.getName());
-                model.addAttribute("accounts", accounts);
-                return "transfer";
-            }
-
-            if (fromAccount == null || toAccount == null) {
-                model.addAttribute("errorMessage", "Неверный ID аккаунта");
-                List<BankAccountEntity> accounts = bankAccountService.getBankAccountsByUsername(person.getName());
-                model.addAttribute("accounts", accounts);
-                return "transfer";
-            }
-
-            if (fromAccount.getNameNumber().equals(toAccount.getNameNumber())) {
-                model.addAttribute("errorMessage", "Одинаковые аккаунты отправителя и получателя");
-                List<BankAccountEntity> accounts = bankAccountService.getBankAccountsByUsername(person.getName());
-                model.addAttribute("accounts", accounts);
-                return "transfer";
-            }
-
-            if (fromAccount.getAmount().compareTo(amount) < 0) {
-                model.addAttribute("errorMessage", "Недостаточно средств для перевода");
-                List<BankAccountEntity> accounts = bankAccountService.getBankAccountsByUsername(person.getName());
-                model.addAttribute("accounts", accounts);
-                return "transfer";
-            }
-        } catch (Exception e) {
-            logger.info("Перед попыткой перевода" + e.getMessage());
-        }
-
-        try {
-            logger.info("Попытка перевода " + transferInformation);
-            transferInformationService.transferMoney(fromAccount, toAccount, amount);
-            transferInformationRepository.save(transferInformation);
+            transferInformationService.processTransfer(transferInformation, model);
+            bankAccountService.getProfile(person.getName(), model);
             model.addAttribute("successMessage", "Перевод успешно выполнен");
         } catch (Exception e) {
-            model.addAttribute("errorMessage", "Произошла ошибка при выполнении перевода: " + e.getMessage());
+            model.addAttribute("errorMessage", model.getAttribute("errorMessage"));
+            logger.info("Ошибка при переводе " + e.getMessage());
         }
-
-        List<BankAccountEntity> accounts = bankAccountService.getBankAccountsByUsername(person.getName());
-        model.addAttribute("accounts", accounts);
         return "transfer";
     }
 }

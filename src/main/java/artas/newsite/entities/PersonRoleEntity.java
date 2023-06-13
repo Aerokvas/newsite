@@ -1,7 +1,10 @@
 package artas.newsite.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Objects;
 
@@ -39,7 +42,10 @@ public class PersonRoleEntity {
     }
 
     @Override
-    public String toString(){
-        return getId() + " " + person.getId() + " " + role.getId();
+    public String toString() {
+        return /*"[" + getClass().getSimpleName() + "]"
+                + ": id - " + getId()
+                + "; person id - " + person.getId()
+                + "; role name - " + */role.getName();
     }
 }

@@ -12,7 +12,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static java.lang.System.out;
 
-@EnableWebMvc
+//@EnableWebMvc
 @SpringBootApplication
 public class NewsiteApplication implements CommandLineRunner {
     private final PersonRepository personRepository;

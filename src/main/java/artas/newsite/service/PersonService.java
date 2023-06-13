@@ -5,11 +5,14 @@ import artas.newsite.entities.PersonRoleEntity;
 import artas.newsite.entities.RoleEntity;
 import artas.newsite.repositories.PersonRepository;
 import artas.newsite.repositories.RoleRepository;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.lang.System.out;
 
@@ -18,6 +21,7 @@ public class PersonService {
     private final PersonRepository personRepository;
     private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final Log logger = LogFactory.getLog(getClass());
 
     public PersonService(PersonRepository personRepository, RoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.personRepository = personRepository;
@@ -34,7 +38,7 @@ public class PersonService {
     }
 
     public boolean saveUser(PersonEntity user) {
-        try{
+        try {
             Optional<PersonEntity> userFromDB = personRepository.findByUsername(user.getUsername());
 
             if (userFromDB.isPresent()) {
@@ -50,16 +54,41 @@ public class PersonService {
             user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
             user.setMaxAccountCount(0);
 
-            out.println(user.toString());
-            out.println(userRole.toString());
+            logger.info("Пользователь создан: " + user.toString());
+            logger.info("Принадлежность: " + userRole.toString());
 
             personRepository.save(user);
 
             return true;
-        } catch (Exception e){
+        } catch (Exception e) {
             out.println(e.getMessage());
         }
 
+        return false;
+    }
+
+    public boolean editRole(Optional<PersonEntity> person, List<Integer> rolesIds) {
+        if (person.isPresent()) {
+            Set<PersonRoleEntity> personRoles = person.get().getPersonRoles();
+            List<RoleEntity> selectedRoles = roleRepository.findRolesByIds(rolesIds);
+
+            // Удаление ролей, которые не выбраны
+            personRoles.removeIf(personRole -> !selectedRoles.contains(personRole.getRole()));
+            logger.info("Выбранные роли " + selectedRoles);
+
+            // Добавление новых ролей
+            for (RoleEntity role : selectedRoles) {
+                if (personRoles.stream().noneMatch(personRole -> personRole.getRole().equals(role))) {
+                    PersonRoleEntity personRole = new PersonRoleEntity();
+                    personRole.setPerson(person.get());
+                    personRole.setRole(role);
+                    personRoles.add(personRole);
+                    logger.info("Добавлена роль " + role);
+                }
+            }
+            personRepository.save(person.get());
+            return true;
+        }
         return false;
     }
 

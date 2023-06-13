@@ -8,8 +8,8 @@
 <body>
 <div>
     <h3 style="text-align: center">Счета</h3>
-    <div th:if="${error}">
-        <p style="color:green" th:text="${error}"></p>
+    <div th:if="${errorMessage}">
+        <p style="color:green" th:text="${errorMessage}"></p>
     </div>
     <div th:if="${accounts}">
         <div th:each="account : ${accounts}">
@@ -22,7 +22,7 @@
     </div>
 </div>
 <div>
-    <p><a href="/profile_account/transfer">Переводы</a></p>
+    <p th:if="${accounts}"><a href="/profile_account/transfer">Переводы</a></p>
     <p><a href="/profile_account/new_account">Открыть новый счет</a></p>
     <a href="/home">Назад</a>
 </div>
