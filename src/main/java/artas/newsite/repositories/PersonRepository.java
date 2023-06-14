@@ -14,8 +14,6 @@ import java.util.Optional;
 public interface PersonRepository extends JpaRepository<PersonEntity, Integer> {
     Optional<PersonEntity> findByUsername(@Param("login") String login);
 
-    @Query("SELECT p.maxAccountCount FROM PersonEntity p WHERE p.id = :id")
-    Integer findMaxAccountCountById(Integer id);
     @Query("SELECT r.role FROM PersonEntity p JOIN p.personRoles r WHERE p.id = :id")
     List<RoleEntity> findUserRoles(@Param("id") Integer id);
 }

@@ -30,10 +30,6 @@ public class PersonService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
-    public int findMaxAccountCountById(Integer id) {
-        return personRepository.findMaxAccountCountById(id);
-    }
-
     public List<PersonEntity> allUsers() {
         return personRepository.findAll();
     }
@@ -54,7 +50,6 @@ public class PersonService {
             personRole.setRole(role);
             person.getPersonRoles().add(personRole);
             person.setPassword(bCryptPasswordEncoder.encode(person.getPassword()));
-            person.setMaxAccountCount(0);
 
             logger.info("Создание пользователя: " + person + "; Принадлежность: " + personRole);
 
@@ -75,11 +70,10 @@ public class PersonService {
             Set<PersonRoleEntity> personRoles = person.get().getPersonRoles();
             List<RoleEntity> selectedRoles = roleRepository.findRolesByIds(rolesIds);
 
-            // Удаление ролей, которые не выбраны
             personRoles.removeIf(personRole -> !selectedRoles.contains(personRole.getRole()));
+
             logger.info("Выбранные роли " + selectedRoles);
 
-            // Добавление новых ролей
             for (RoleEntity role : selectedRoles) {
                 if (personRoles.stream().noneMatch(personRole -> personRole.getRole().equals(role))) {
                     PersonRoleEntity personRole = new PersonRoleEntity();

@@ -52,8 +52,6 @@ public class BankAccountService {
                     bankAccount.setAmount(BigDecimal.valueOf(1000));
                     bankAccount.setPersonId(userFromDB.get());
 
-                    userFromDB.get().setMaxAccountCount(userFromDB.get().getMaxAccountCount() + 1);
-
                     logger.info("До сохранения - " + bankAccount);
 
                     accountRepository.save(bankAccount);
@@ -87,7 +85,7 @@ public class BankAccountService {
 
         if (personRepository.findByUsername(username).isPresent()) {
             userCode = personRepository.findByUsername(username).get().getId();
-            maxAccountCode = personService.findMaxAccountCountById(userCode);
+            maxAccountCode = accountRepository.getAccountsCountByPersonId(userCode);
         }
 
         if (maxAccountCode >= 99999) {

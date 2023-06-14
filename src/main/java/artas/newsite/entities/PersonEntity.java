@@ -41,8 +41,6 @@ public class PersonEntity {
     @Transient
     private String confirmPassword;
 
-    @Column(name = "max_account_count")
-    private Integer maxAccountCount;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PersonRoleEntity> personRoles = new HashSet<>();
@@ -71,7 +69,6 @@ public class PersonEntity {
                 + ": id - " + getId()
                 + "; login - " + getUsername()
                 + "; password - " + getPassword()
-                + "; accounts - " + getMaxAccountCount()
                 + "; role - " + getPersonRoles();
     }
 
