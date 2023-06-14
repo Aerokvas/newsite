@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -22,18 +23,22 @@ public class PersonEntity {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "login")
+    /*@NotNull
     @NotBlank(message = "Логин обязателен.")
-    @Size(min=5, message = "Логин должен быть от 5 символов.")
+    @Size(min=5, message = "Логин должен быть от 5 символов..")*/
+    @Column(name = "login")
     private String username;
 
-    @Column(name = "password")
+    /*@NotNull
     @NotBlank(message = "Пароль обязателен.")
-    @Size(min=5, message = "Пароль должен быть от 5 символов.")
+    @Size(min=5, max = 30,message = "Пароль должен быть от 5 до 30 символов..")*/
+    @Column(name = "password")
     private String password;
 
+    /*@NotNull
+    @Size(min=5, max = 30,message = "Повторный пароль должен быть от 5 до 30 символов.")
+    @NotBlank(message = "Повторный пароль обязателен.")*/
     @Transient
-    @NotBlank(message = "Повторный пароль обязателен.")
     private String confirmPassword;
 
     @Column(name = "max_account_count")

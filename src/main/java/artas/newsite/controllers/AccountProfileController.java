@@ -51,7 +51,7 @@ public class AccountProfileController implements WebMvcConfigurer {
 
     @PostMapping("/profile_account/new_account")
     public String createAccount(Principal person, Model model) {
-        if (bankAccountService.createBankAccount(person.getName(), model)) {
+        if (bankAccountService.createBankAccount(person.getName())) {
             return "redirect:/profile_account";
         } else {
             model.addAttribute("errorMessage", "Произошла ошибка при создании счета. Повторите попытку и если проблема не решилась, то обратитесь в тех. поддержку.");
@@ -71,15 +71,20 @@ public class AccountProfileController implements WebMvcConfigurer {
 
     @PostMapping("/profile_account/transfer")
     public String processTransfer(@ModelAttribute("transferInformation") @Valid TransferInformationEntity transferInformation,
-                                  Principal person, Model model) {
-        logger.info("Информация о переводе 1 " + transferInformation);
-        try {
-            transferInformationService.processTransfer(transferInformation, model);
+                                  Principal person, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            bankAccountService.getProfile(person.getName(), model);
+            return "transfer";
+        }
+
+        logger.info("Информация о переводе (post) " + transferInformation);
+
+        if (transferInformationService.processTransfer(transferInformation, model)) {
             bankAccountService.getProfile(person.getName(), model);
             model.addAttribute("successMessage", "Перевод успешно выполнен");
-        } catch (Exception e) {
+        } else {
+            bankAccountService.getProfile(person.getName(), model);
             model.addAttribute("errorMessage", model.getAttribute("errorMessage"));
-            logger.info("Ошибка при переводе " + e.getMessage());
         }
         return "transfer";
     }

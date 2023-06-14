@@ -8,14 +8,14 @@
 <body>
 <div>
     <form th:action="@{/registration}" th:method="post" th:object="${userForm}">
-        <h2>Регистрация</h2>
+        <h1>Регистрация</h1>
         <div>
             <p>Логин: <input type="text" th:field="*{username}"/></p>
             <div th:if="${#fields.hasErrors('username')}">
                 <p th:errors="*{username}" style="color:red"></p>
-            </div>
-            <div th:if="${usernameError}">
-                <p th:text="${usernameError}" style="color:red"></p>
+                <div th:if="${usernameError}">
+                    <p th:text="${usernameError}" style="color:red"></p>
+                </div>
             </div>
         </div>
         <div>

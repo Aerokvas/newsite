@@ -1,6 +1,7 @@
 package artas.newsite.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,6 +22,7 @@ public class BankAccountEntity {
     @Column(name = "id")
     private int id;
 
+    @Size(min = 8, max = 8)
     @Column(name = "name_number")
     private String nameNumber;
 

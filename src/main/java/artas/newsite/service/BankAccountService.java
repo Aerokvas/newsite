@@ -2,9 +2,10 @@ package artas.newsite.service;
 
 import artas.newsite.entities.BankAccountEntity;
 import artas.newsite.entities.PersonEntity;
-import artas.newsite.entities.TransferInformationEntity;
 import artas.newsite.repositories.BankAccountRepository;
 import artas.newsite.repositories.PersonRepository;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -19,6 +20,8 @@ public class BankAccountService {
     private final PersonService personService;
     private final PersonRepository personRepository;
     private final BankAccountRepository accountRepository;
+    private final Log logger = LogFactory.getLog(getClass());
+
 
     public BankAccountService(PersonRepository personRepository, BankAccountRepository accountRepository, PersonService personService) {
         this.personRepository = personRepository;
@@ -28,16 +31,16 @@ public class BankAccountService {
 
     public List<BankAccountEntity> getBankAccountsByUsername(String username) {
         Optional<PersonEntity> userFromDB = personRepository.findByUsername(username);
-        out.println(accountRepository.getBankAccountEntitiesByPersonId(userFromDB.get()));
+        logger.info("Вывод всех счетов: " + accountRepository.getBankAccountEntitiesByPersonId(userFromDB.get()));
         return accountRepository.getBankAccountEntitiesByPersonId(userFromDB.get());
     }
 
     public BankAccountEntity getBankAccountByNameNumber(String nameNumber) {
-        out.println(accountRepository.getBankAccountEntityByNameNumber(nameNumber));
+        logger.info("Вывод счета по его имени - " + accountRepository.getBankAccountEntityByNameNumber(nameNumber));
         return accountRepository.getBankAccountEntityByNameNumber(nameNumber);
     }
 
-    public boolean createBankAccount(String username, Model model) {
+    public boolean createBankAccount(String username) {
         try {
             Optional<PersonEntity> userFromDB = personRepository.findByUsername(username);
 
@@ -50,15 +53,19 @@ public class BankAccountService {
                     bankAccount.setPersonId(userFromDB.get());
 
                     userFromDB.get().setMaxAccountCount(userFromDB.get().getMaxAccountCount() + 1);
-                    out.println("До сохранения - " + bankAccount);
+
+                    logger.info("До сохранения - " + bankAccount);
+
                     accountRepository.save(bankAccount);
-                    out.println("После сохранения - " + bankAccount);
+
+                    logger.info("После сохранения - " + bankAccount);
+
                     personRepository.save(userFromDB.get());
                     return true;
                 }
             }
         } catch (Exception e) {
-            out.println("SaveAccount - " + e.getMessage());
+            logger.info("SaveAccount - " + e.getMessage(), e);
         }
         return false;
     }

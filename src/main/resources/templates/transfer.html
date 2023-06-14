@@ -16,17 +16,28 @@
     <div>
         <form th:action="@{/profile_account/transfer}" th:method="post" th:object="${transferInformation}">
             <div>
+                <div th:if="${#fields.hasErrors('fromAccountNumber')}">
+                    <p th:errors="*{fromAccountNumber}" style="color:red"></p>
+                </div>
                 <p>Отправитель:
-                    <select th:field="*{fromAccountNumber}">
-                        <option th:each="account : ${accounts}" th:value="${account.nameNumber}"
-                                th:text="${account.nameNumber}"></option>
-                    </select>
+                    <label>
+                        <select th:field="*{fromAccountNumber}">
+                            <option th:each="account : ${accounts}" th:value="${account.nameNumber}"
+                                    th:text="${account.nameNumber}"></option>
+                        </select>
+                    </label>
                 </p>
             </div>
             <div>
+                <div th:if="${#fields.hasErrors('toAccountNumber')}">
+                    <p th:errors="*{toAccountNumber}" style="color:red"></p>
+                </div>
                 <p>Получатель: <input th:field="*{toAccountNumber}" required/></p>
             </div>
             <div>
+                <div th:if="${#fields.hasErrors('amount')}">
+                    <p th:errors="*{amount}" style="color:red"></p>
+                </div>
                 <p>Сумма: <input th:field="*{amount}" type="number" min="0" step="0.01" required/></p>
 
             </div>

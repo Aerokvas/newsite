@@ -9,6 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,31 +38,33 @@ public class PersonService {
         return personRepository.findAll();
     }
 
-    public boolean saveUser(PersonEntity user) {
+    public boolean saveUser(PersonEntity person, Model model) {
         try {
-            Optional<PersonEntity> userFromDB = personRepository.findByUsername(user.getUsername());
+            Optional<PersonEntity> userFromDB = personRepository.findByUsername(person.getUsername());
 
             if (userFromDB.isPresent()) {
+                model.addAttribute("usernameError", "Такой пользователь уже существует");
                 return false;
             }
 
             RoleEntity role = roleRepository.findByName("ROLE_USER");
 
-            PersonRoleEntity userRole = new PersonRoleEntity();
-            userRole.setPerson(user);
-            userRole.setRole(role);
-            user.getPersonRoles().add(userRole);
-            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-            user.setMaxAccountCount(0);
+            PersonRoleEntity personRole = new PersonRoleEntity();
+            personRole.setPerson(person);
+            personRole.setRole(role);
+            person.getPersonRoles().add(personRole);
+            person.setPassword(bCryptPasswordEncoder.encode(person.getPassword()));
+            person.setMaxAccountCount(0);
 
-            logger.info("Пользователь создан: " + user.toString());
-            logger.info("Принадлежность: " + userRole.toString());
+            logger.info("Создание пользователя: " + person + "; Принадлежность: " + personRole);
 
-            personRepository.save(user);
+            personRepository.save(person);
+
+            logger.info("Пользователь создан");
 
             return true;
         } catch (Exception e) {
-            out.println(e.getMessage());
+            logger.info("При регистрации что-то пошло не так" + e.getMessage(), e);
         }
 
         return false;

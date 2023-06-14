@@ -35,8 +35,8 @@ public class RegistrationController {
             return "registration";
         }
 
-        if (!personService.saveUser(userForm)){
-            model.addAttribute("usernameError", "Пользователь с таким именем уже существует");
+        if (!personService.saveUser(userForm, model)){
+            model.addAttribute("usernameError", model.getAttribute("usernameError"));
             return "registration";
         }
 

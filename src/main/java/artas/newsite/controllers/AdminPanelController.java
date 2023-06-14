@@ -34,6 +34,7 @@ public class AdminPanelController {
 
     @GetMapping("/admin")
     public String showUserList(Model model) {
+        logger.info("Админка запущена");
         List<PersonEntity> users = personRepository.findAll();
         model.addAttribute("users", users);
         return "admin";
@@ -45,22 +46,23 @@ public class AdminPanelController {
             if (personService.deleteUser(id)) {
                 List<PersonEntity> users = personRepository.findAll();
                 model.addAttribute("users", users);
-                return "admin";
+                return "redirect:/admin ";
             } else {
                 List<PersonEntity> users = personRepository.findAll();
                 model.addAttribute("users", users);
                 model.addAttribute("error", "Произошла ошибка при удалении");
-                return "admin";
+                return "redirect:/admin";
             }
         } catch (Exception e) {
             logger.info("Ошибка в удалении - " + e.getMessage(), e);
         }
 
-        return "admin";
+        return "redirect:/admin";
     }
 
     @GetMapping("admin/edit/{id}")
     public String showEditUserRoleForm(@PathVariable Integer id, Model model) {
+        logger.info("Редактирование запущено");
         Optional<PersonEntity> person = personRepository.findById(id);
 
         if (person.isPresent()) {
@@ -83,7 +85,7 @@ public class AdminPanelController {
             logger.info("Входные роли " + rolesIds);
 
             if (personService.editRole(person, rolesIds)) {
-                return "admin";
+                return "redirect:/admin";
             } else {
                 model.addAttribute("errorEditing", "При добавлении ролей что-то пошло не так.");
                 return "redirect:/admin/edit/" + id;
