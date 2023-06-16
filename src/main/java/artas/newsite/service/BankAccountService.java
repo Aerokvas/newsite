@@ -17,7 +17,6 @@ import static java.lang.System.out;
 
 @Service
 public class BankAccountService {
-    private final PersonService personService;
     private final PersonRepository personRepository;
     private final BankAccountRepository accountRepository;
     private final Log logger = LogFactory.getLog(getClass());
@@ -26,7 +25,6 @@ public class BankAccountService {
     public BankAccountService(PersonRepository personRepository, BankAccountRepository accountRepository, PersonService personService) {
         this.personRepository = personRepository;
         this.accountRepository = accountRepository;
-        this.personService = personService;
     }
 
     public List<BankAccountEntity> getBankAccountsByUsername(String username) {

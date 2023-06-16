@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static java.lang.System.out;
-
 @Service
 public class PersonService {
     private final PersonRepository personRepository;
@@ -38,26 +36,30 @@ public class PersonService {
         try {
             Optional<PersonEntity> userFromDB = personRepository.findByUsername(person.getUsername());
 
-            if (userFromDB.isPresent()) {
+            if (userFromDB.isEmpty()) {
+                if(userFromDB.isPresent()){
+                    model.addAttribute("usernameError", "Такой пользователь уже существует");
+                    return false;
+                }
+                RoleEntity role = roleRepository.findByName("ROLE_USER");
+
+                PersonRoleEntity personRole = new PersonRoleEntity();
+                personRole.setPerson(person);
+                personRole.setRole(role);
+                person.getPersonRoles().add(personRole);
+                person.setPassword(bCryptPasswordEncoder.encode(person.getPassword()));
+
+                logger.info("Создание пользователя: " + person + "; Принадлежность: " + personRole);
+
+                personRepository.save(person);
+
+                logger.info("Пользователь создан");
+
+                return true;
+            } else {
                 model.addAttribute("usernameError", "Такой пользователь уже существует");
                 return false;
             }
-
-            RoleEntity role = roleRepository.findByName("ROLE_USER");
-
-            PersonRoleEntity personRole = new PersonRoleEntity();
-            personRole.setPerson(person);
-            personRole.setRole(role);
-            person.getPersonRoles().add(personRole);
-            person.setPassword(bCryptPasswordEncoder.encode(person.getPassword()));
-
-            logger.info("Создание пользователя: " + person + "; Принадлежность: " + personRole);
-
-            personRepository.save(person);
-
-            logger.info("Пользователь создан");
-
-            return true;
         } catch (Exception e) {
             logger.info("При регистрации что-то пошло не так" + e.getMessage(), e);
         }

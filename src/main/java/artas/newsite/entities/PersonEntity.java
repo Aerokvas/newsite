@@ -23,19 +23,18 @@ public class PersonEntity {
     @Column(name = "id")
     private int id;
 
-    /*@NotNull
+    @NotNull
     @NotBlank(message = "Логин обязателен.")
-    @Size(min=5, message = "Логин должен быть от 5 символов..")*/
-    @Column(name = "login")
+    @Size(min=5, message = "Логин должен быть от 5 символов.")
+    @Column(name = "login", unique = true)
     private String username;
 
-    /*@NotNull
     @NotBlank(message = "Пароль обязателен.")
-    @Size(min=5, max = 30,message = "Пароль должен быть от 5 до 30 символов..")*/
+    @Size(min=5, message = "Пароль должен быть от 5 символов.")
     @Column(name = "password")
     private String password;
 
-    /*@NotNull
+   /* @NotNull
     @Size(min=5, max = 30,message = "Повторный пароль должен быть от 5 до 30 символов.")
     @NotBlank(message = "Повторный пароль обязателен.")*/
     @Transient
