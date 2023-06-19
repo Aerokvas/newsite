@@ -25,9 +25,11 @@ public class TransferInformationService {
     public synchronized void transferMoney(BankAccountEntity fromAccount, BankAccountEntity toAccount, BigDecimal amount) {
         try {
             logger.info("Начало перевода.");
-            logger.info("Информация перевода: от " + fromAccount + ", кому " + toAccount + ", сумма " + amount);
 
             if (fromAccount.getAmount().compareTo(amount) >= 0) {
+                logger.info("Информация перевода: от " + fromAccount
+                        + ", кому " + toAccount
+                        + ", сумма " + amount);
                 fromAccount.takeValue(amount);
                 toAccount.putValue(amount);
             }
@@ -61,6 +63,7 @@ public class TransferInformationService {
                         transferInformationRepository.save(transferInformation);
                         return true;
                     } catch (Exception e) {
+                        logger.info("Произошла ошибка " + e.getMessage());
                         model.addAttribute("errorMessage", "Произошла ошибка при выполнении перевода: " + e.getMessage());
                         return false;
                     }

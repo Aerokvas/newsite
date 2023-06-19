@@ -37,6 +37,12 @@ public class TransferInformationEntity {
     @Column(name = "toaccount")
     private String toAccountNumber;
 
+    public TransferInformationEntity(String fromAccountNumber, String toAccountNumber, BigDecimal amount) {
+        this.fromAccountNumber = fromAccountNumber;
+        this.toAccountNumber = toAccountNumber;
+        this.amount = amount;
+    }
+
     public String toString(){
         return "[" + getClass().getSimpleName() + "]" + ": id - " + getId()
                 + "; fromAccount - " + getFromAccountNumber()
