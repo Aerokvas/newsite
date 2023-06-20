@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class TransferInformationService {
@@ -24,8 +25,6 @@ public class TransferInformationService {
 
     public synchronized void transferMoney(BankAccountEntity fromAccount, BankAccountEntity toAccount, BigDecimal amount) {
         try {
-            logger.info("Начало перевода.");
-
             if (fromAccount.getAmount().compareTo(amount) >= 0) {
                 logger.info("Информация перевода: от " + fromAccount
                         + ", кому " + toAccount
@@ -79,5 +78,8 @@ public class TransferInformationService {
             model.addAttribute("errorMessage", "Неверный номер получателя.");
             return false;
         }
+    }
+    public List<TransferInformationEntity> getAllTransactionWhereIsANameNumber(String nameNumber){
+        return transferInformationRepository.findByFromAccountNumberOrToAccountNumber(nameNumber, nameNumber);
     }
 }

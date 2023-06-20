@@ -18,9 +18,10 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 
 import static java.lang.System.out;
@@ -66,38 +67,40 @@ public class NewsiteApplication implements CommandLineRunner {
 
         logger.info("Полные счета: " + fullAccounts);
 
-        Semaphore semaphore = new Semaphore(1);
-
         int size = Math.min(emptyAccounts.size(), fullAccounts.size());
+        CountDownLatch latch = new CountDownLatch(size);
 
         for (int i = 0; i < size; i++) {
             int index = i;
 
             executorService.execute(() -> {
-                try {
-                    semaphore.acquire();
+                logger.info("\033[1;33m Поток " + Thread.currentThread().getName() + "\033[0m начался");
+                BankAccountEntity fromAccount = bankAccountRepository.getBankAccountEntityByNameNumber(fullAccounts.get(index).getNameNumber());
+                BankAccountEntity toAccount = bankAccountRepository.getBankAccountEntityByNameNumber(emptyAccounts.get(index).getNameNumber());
 
-                    BankAccountEntity fromAccount = bankAccountRepository.getBankAccountEntityByNameNumber(fullAccounts.get(index).getNameNumber());
-                    BankAccountEntity toAccount = bankAccountRepository.getBankAccountEntityByNameNumber(emptyAccounts.get(index).getNameNumber());
-                    BigDecimal amount = fromAccount.getAmount();
+                BigDecimal minAmount = BigDecimal.ZERO;
+                BigDecimal maxAmount = fromAccount.getAmount();
 
-                    transferInformationService.transferMoney(fromAccount, toAccount, amount);
+                Random random = new Random();
 
-                    bankAccountRepository.save(fromAccount);
-                    bankAccountRepository.save(toAccount);
-                    transferInformationRepository.save(new TransferInformationEntity(fromAccount.getNameNumber(), toAccount.getNameNumber(), amount));
+                BigDecimal amount = minAmount.add(BigDecimal.valueOf(random.nextDouble()).multiply(maxAmount));
 
-                    logger.info("Перевод выполнен: от " + fromAccount.getNameNumber()
-                            + "; кому " + toAccount.getNameNumber()
-                            + "; сумма " + amount);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } finally {
-                    semaphore.release();
-                }
+                transferInformationService.transferMoney(fromAccount, toAccount, amount);
+
+                logger.info("\033[1;31m Поток № " + Thread.currentThread().getName() + "\033[0m //// Перевод выполнен: от " + fromAccount.getNameNumber()
+                        + "; кому " + toAccount.getNameNumber()
+                        + "; сумма " + amount);
+
+                bankAccountRepository.save(fromAccount);
+                bankAccountRepository.save(toAccount);
+                transferInformationRepository.save(new TransferInformationEntity(fromAccount.getNameNumber(), toAccount.getNameNumber(), amount));
+
+                logger.info("\033[1;34m Поток " + Thread.currentThread().getName() + "\033[0m закончился");
+
+                latch.countDown();
             });
         }
-
+        latch.await();
         executorService.shutdown();
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -87,5 +88,13 @@ public class AccountProfileController implements WebMvcConfigurer {
             model.addAttribute("errorMessage", model.getAttribute("errorMessage"));
         }
         return "transfer";
+    }
+
+    @GetMapping("profile_account/transfer_history/{nameNumber}")
+    public String showTransferHistory(@PathVariable("nameNumber") String nameNumber, Model model) {
+        List<TransferInformationEntity> history = transferInformationService.getAllTransactionWhereIsANameNumber(nameNumber);
+        model.addAttribute("history", history);
+
+        return "transfer_history";
     }
 }

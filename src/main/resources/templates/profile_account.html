@@ -16,6 +16,7 @@
             <div>
                 <p><strong>Номер: </strong><span th:text="${account.nameNumber}"></span></p>
                 <p><strong>Сумма: </strong><span th:text="${account.amount}"></span></p>
+                <p><a th:href="@{/profile_account/transfer_history/{nameNumber}(nameNumber=${account.nameNumber})}">История</a></p>
             </div>
             <hr/>
         </div>

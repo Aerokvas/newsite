@@ -9,3 +9,11 @@
 .available-role {
     color: green;
 }
+
+.sender {
+    color: red;
+}
+
+.recipient {
+    color: green;
+}
