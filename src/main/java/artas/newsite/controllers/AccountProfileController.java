@@ -8,13 +8,13 @@ import artas.newsite.service.TransferInformationService;
 import jakarta.validation.Valid;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.security.Principal;
@@ -26,11 +26,13 @@ import static java.lang.System.out;
 public class AccountProfileController implements WebMvcConfigurer {
     private final BankAccountService bankAccountService;
     private final TransferInformationService transferInformationService;
+    private final TransferInformationRepository transferInformationRepository;
     private final Log logger = LogFactory.getLog(getClass());
 
-    public AccountProfileController(BankAccountService bankAccountService, TransferInformationService transferInformationService, TransferInformationRepository transferInformationRepository) {
+    public AccountProfileController(BankAccountService bankAccountService, TransferInformationService transferInformationService, TransferInformationRepository transferInformationRepository, TransferInformationRepository transferInformationRepository1) {
         this.bankAccountService = bankAccountService;
         this.transferInformationService = transferInformationService;
+        this.transferInformationRepository = transferInformationRepository1;
     }
 
     @GetMapping("/profile_account")
@@ -96,5 +98,17 @@ public class AccountProfileController implements WebMvcConfigurer {
         model.addAttribute("history", history);
 
         return "transfer_history";
+    }
+
+    @GetMapping("profile_account/all_transfer_history")
+    public String showTransferPage(Model model,
+                                   @RequestParam(defaultValue = "0") int page,
+                                   @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<TransferInformationEntity> transferPage = transferInformationService.getAllPagination(pageable);
+
+        model.addAttribute("transferPage", transferPage);
+
+        return "all_transfer_history";
     }
 }

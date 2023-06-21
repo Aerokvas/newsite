@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Все переводы</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link media="all" rel="stylesheet" th:href="@{/css/edit.css}" type="text/css"/>
+</head>
+<body>
+<table>
+    <thead>
+    <tr>
+        <th>От кого</th>
+        <th>Кому</th>
+        <th>Сумма</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="transfer : ${transferPage.content}">
+        <td th:text="${transfer.fromAccountNumber}"></td>
+        <td th:text="${transfer.toAccountNumber}"></td>
+        <td th:text="${transfer.amount}"></td>
+    </tr>
+    </tbody>
+</table>
+<div class="pagination">
+    <ul>
+        <li th:class="${transferPage.number == 0} ? disabled">
+            <a th:href="@{/profile_account/all_transfer_history(page=0,size=${transferPage.size})}">Назад</a>
+        </li>
+        <li th:each="pageNumber : ${#numbers.sequence(0, transferPage.totalPages - 1)}">
+            <a th:href="@{/profile_account/all_transfer_history(page=${pageNumber},size=${transferPage.size})}"
+               th:class="${pageNumber == transferPage.number} ? active">
+                <span th:text="${pageNumber + 1}"></span>
+            </a>
+        </li>
+        <li th:class="${transferPage.number == transferPage.totalPages - 1} ? disabled">
+            <a th:href="@{/profile_account/all_transfer_history(page=${transferPage.totalPages - 1},size=${transferPage.size})}">Далее</a>
+        </li>
+    </ul>
+</div>
+<a href="/profile_account">Назад</a>
+</body>
+</html>

@@ -5,6 +5,8 @@ import artas.newsite.entities.TransferInformationEntity;
 import artas.newsite.repositories.TransferInformationRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -81,5 +83,9 @@ public class TransferInformationService {
     }
     public List<TransferInformationEntity> getAllTransactionWhereIsANameNumber(String nameNumber){
         return transferInformationRepository.findByFromAccountNumberOrToAccountNumber(nameNumber, nameNumber);
+    }
+
+    public Page<TransferInformationEntity> getAllPagination(Pageable pageable){
+        return transferInformationRepository.findAll(pageable);
     }
 }
