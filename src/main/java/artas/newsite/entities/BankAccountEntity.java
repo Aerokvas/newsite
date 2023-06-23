@@ -22,7 +22,7 @@ public class BankAccountEntity {
     @Column(name = "id")
     private int id;
 
-    @Size(min = 8, max = 8)
+    @Size(min = 8, max = 10)
     @Column(name = "name_number")
     private String nameNumber;
 

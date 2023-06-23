@@ -1,11 +1,9 @@
 package artas.newsite;
 
 import artas.newsite.config.Config;
-import artas.newsite.entities.BankAccountEntity;
-import artas.newsite.entities.TransferInformationEntity;
 import artas.newsite.entities.WeekDay;
-import artas.newsite.repositories.BankAccountRepository;
-import artas.newsite.repositories.TransferInformationRepository;
+import artas.newsite.service.BankAccountService;
+import artas.newsite.service.PersonService;
 import artas.newsite.service.TransferInformationService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,27 +14,21 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.math.BigDecimal;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
-import java.util.stream.Collectors;
 
 import static java.lang.System.out;
 
 @SpringBootApplication
 public class NewsiteApplication implements CommandLineRunner {
 
-    private final TransferInformationRepository transferInformationRepository;
     private final TransferInformationService transferInformationService;
-    private final BankAccountRepository bankAccountRepository;
+    private final BankAccountService bankAccountService;
+    private final PersonService personService;
     private final Log logger = LogFactory.getLog(getClass());
 
-    public NewsiteApplication(TransferInformationRepository transferInformationRepository, TransferInformationService transferInformationService, BankAccountRepository bankAccountRepository) {
-        this.transferInformationRepository = transferInformationRepository;
+    public NewsiteApplication(TransferInformationService transferInformationService, BankAccountService bankAccountService, PersonService personService) {
         this.transferInformationService = transferInformationService;
-        this.bankAccountRepository = bankAccountRepository;
+        this.bankAccountService = bankAccountService;
+        this.personService = personService;
     }
 
     public static void main(String[] args) {
@@ -49,58 +41,64 @@ public class NewsiteApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        ExecutorService executorService = Executors.newFixedThreadPool(3);
-        List<BankAccountEntity> allAccounts = bankAccountRepository.findAll();
-
-        List<BankAccountEntity> emptyAccounts = allAccounts.stream()
-                .filter(account -> account.getAmount().compareTo(BigDecimal.ZERO) == 0)
-                .sorted(Comparator.comparingInt(BankAccountEntity::getId))
-                .collect(Collectors.toList());
+        bankAccountService.createNAccounts(5, "artas@mail.ru", BigDecimal.valueOf(5000000));
+        /*List<BankAccountEntity> emptyAccounts = bankAccountService.getEmptyAccounts();
 
         logger.info("Пустые счета: " + emptyAccounts);
 
-        List<BankAccountEntity> fullAccounts = allAccounts.stream()
-                .filter(account -> account.getAmount().compareTo(BigDecimal.ZERO) > 0)
-                .sorted(Comparator.comparingInt(BankAccountEntity::getId))
-                .collect(Collectors.toList());
+        List<BankAccountEntity> fullAccounts = bankAccountService.getNonEmptyAccounts();
 
         logger.info("Полные счета: " + fullAccounts);
 
         int size = Math.min(emptyAccounts.size(), fullAccounts.size());
+
+        ExecutorService executorService = Executors.newFixedThreadPool(5);
+
         Semaphore semaphore = new Semaphore(1);
+        AtomicBoolean isTransfersMade = new AtomicBoolean(false);
 
+        do {
+            isTransfersMade.set(false);
 
-        for (int i = 0; i < size; i++) {
-            int index = i;
+            for (int i = 0; i < size; i++) {
+                BankAccountEntity fromAccount = bankAccountService.getBankAccountByNameNumber(fullAccounts.get(i).getNameNumber());
+                BankAccountEntity toAccount = bankAccountService.getBankAccountByNameNumber(emptyAccounts.get(i).getNameNumber());
+                BigDecimal transferAmount = BigDecimal.valueOf(1000000);
 
-            executorService.execute(() -> {
-                try {
-                    semaphore.acquire();
-                    logger.info("\033[1;33m Поток " + Thread.currentThread().getName() + "\033[0m начался");
-                    BankAccountEntity fromAccount = bankAccountRepository.getBankAccountEntityByNameNumber(fullAccounts.get(index).getNameNumber());
-                    BankAccountEntity toAccount = bankAccountRepository.getBankAccountEntityByNameNumber(emptyAccounts.get(index).getNameNumber());
+                if (fromAccount.getAmount().compareTo(transferAmount) >= 0) {
+                    executorService.execute(() -> {
+                        try {
+                            semaphore.acquire();
+                            logger.info("\033[1;33m Поток " + Thread.currentThread().getName() + "\033[0m начался");
 
-                    BigDecimal minAmount = BigDecimal.ZERO;
-                    BigDecimal maxAmount = fromAccount.getAmount();
+                            transferInformationService.transferMoney(fromAccount, toAccount, transferAmount);
 
-                    transferInformationService.transferMoney(fromAccount, toAccount, maxAmount);
+                            logger.info("\033[1;31m Поток № " + Thread.currentThread().getName() + "\033[0m //// Перевод выполнен: от " + fromAccount.getNameNumber()
+                                    + "; кому " + toAccount.getNameNumber()
+                                    + "; сумма " + transferAmount);
 
-                    logger.info("\033[1;31m Поток № " + Thread.currentThread().getName() + "\033[0m //// Перевод выполнен: от " + fromAccount.getNameNumber()
-                            + "; кому " + toAccount.getNameNumber()
-                            + "; сумма " + maxAmount);
+                            bankAccountService.saveBankAccount(fromAccount);
+                            bankAccountService.saveBankAccount(toAccount);
+                            transferInformationService.saveTransfer(new TransferInformationEntity(fromAccount.getNameNumber(), toAccount.getNameNumber(), transferAmount));
 
-                    bankAccountRepository.save(fromAccount);
-                    bankAccountRepository.save(toAccount);
-                    transferInformationRepository.save(new TransferInformationEntity(fromAccount.getNameNumber(), toAccount.getNameNumber(), maxAmount));
+                            logger.info("\033[1;32m Итоговый счет " + toAccount.getNameNumber() + " = " + toAccount.getAmount() + "\033[0m");
+                            logger.info("\033[1;34m Поток " + Thread.currentThread().getName() + "\033[0m закончился");
 
-                    logger.info("\033[1;34m Поток " + Thread.currentThread().getName() + "\033[0m закончился");
-                } catch (Exception e) {
-                    logger.info(e.getMessage());
-                } finally {
-                    semaphore.release();
+                            isTransfersMade.set(true);
+                        } catch (Exception e) {
+                            logger.info(e.getMessage());
+                        } finally {
+                            semaphore.release();
+                        }
+                    });
                 }
-            });
-        }
-        executorService.shutdown();
+            }
+
+            executorService.shutdown();
+            executorService.awaitTermination(5000L, TimeUnit.MILLISECONDS);
+            executorService = Executors.newFixedThreadPool(5);
+        } while (isTransfersMade.get());
+
+        executorService.shutdown();*/
     }
 }

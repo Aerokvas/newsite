@@ -67,3 +67,29 @@ th {
     pointer-events: none;
     opacity: 0.6;
 }
+
+.navbar{
+    background: #00bff9;
+}
+
+.nav-link , .navbar-brand{
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+}
+
+.nav-link{
+    margin-right: 1em !important;
+}
+
+.nav-link:hover{
+    background: #007698;
+    color: #00bff9;
+}
+
+.navbar-collapse{
+    justify-content: flex-end;
+}
+
+.navbar-toggler{
+    background:#fff !important;
+}

@@ -33,7 +33,7 @@ public class TransferInformationEntity {
 
     @NotNull(message = "Неверный номер получателя")
     @NotBlank(message = "Неверный номер получателя")
-    @Size(min = 8, max = 8, message = "Счет получателя должен состоять из 8 цифр")
+    @Size(min = 8, max = 10, message = "Счет получателя должен состоять из 10 цифр")
     @Column(name = "toaccount")
     private String toAccountNumber;
 

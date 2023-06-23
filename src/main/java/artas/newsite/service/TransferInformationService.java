@@ -81,11 +81,16 @@ public class TransferInformationService {
             return false;
         }
     }
-    public List<TransferInformationEntity> getAllTransactionWhereIsANameNumber(String nameNumber){
+
+    public List<TransferInformationEntity> getAllTransactionWhereIsANameNumber(String nameNumber) {
         return transferInformationRepository.findByFromAccountNumberOrToAccountNumber(nameNumber, nameNumber);
     }
 
-    public Page<TransferInformationEntity> getAllPagination(Pageable pageable){
+    public Page<TransferInformationEntity> getAllPagination(Pageable pageable) {
         return transferInformationRepository.findAll(pageable);
+    }
+
+    public void saveTransfer(TransferInformationEntity transferInformation) {
+        transferInformationRepository.save(transferInformation);
     }
 }

@@ -2,6 +2,7 @@ package artas.newsite.repositories;
 
 import artas.newsite.entities.BankAccountEntity;
 import artas.newsite.entities.PersonEntity;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,4 +17,7 @@ public interface BankAccountRepository extends JpaRepository<BankAccountEntity, 
     BankAccountEntity getBankAccountEntityByNameNumber(String nameNumber);
     @Query("SELECT COUNT(b) FROM BankAccountEntity b WHERE b.personId.id = :personId")
     int getAccountsCountByPersonId(@Param("personId") Integer personId);
+
+    List<BankAccountEntity> findByAmount(BigDecimal amount, Sort sort);
+    List<BankAccountEntity> findByAmountGreaterThan(BigDecimal amount, Sort sort);
 }

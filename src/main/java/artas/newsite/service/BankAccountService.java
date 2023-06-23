@@ -6,14 +6,14 @@ import artas.newsite.repositories.BankAccountRepository;
 import artas.newsite.repositories.PersonRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-
-import static java.lang.System.out;
 
 @Service
 public class BankAccountService {
@@ -33,37 +33,24 @@ public class BankAccountService {
         return accountRepository.getBankAccountEntitiesByPersonId(userFromDB.get());
     }
 
+    public void saveBankAccount(BankAccountEntity bankAccountEntity) {
+        accountRepository.save(bankAccountEntity);
+    }
+
     public BankAccountEntity getBankAccountByNameNumber(String nameNumber) {
-        logger.info("Вывод счета по его имени - " + accountRepository.getBankAccountEntityByNameNumber(nameNumber));
         return accountRepository.getBankAccountEntityByNameNumber(nameNumber);
     }
 
-    public boolean createBankAccount(String username) {
-        try {
-            Optional<PersonEntity> userFromDB = personRepository.findByUsername(username);
+    public List<BankAccountEntity> getAllAccounts() {
+        return accountRepository.findAll();
+    }
 
-            if (userFromDB.isPresent()) {
-                BankAccountEntity bankAccount = new BankAccountEntity();
+    public List<BankAccountEntity> getEmptyAccounts() {
+        return accountRepository.findByAmount(BigDecimal.ZERO, Sort.by("id"));
+    }
 
-                if (!generateAccountNumber(username).equals("-1")) {
-                    bankAccount.setNameNumber(generateAccountNumber(username));
-                    bankAccount.setAmount(BigDecimal.valueOf(1000));
-                    bankAccount.setPersonId(userFromDB.get());
-
-                    logger.info("До сохранения - " + bankAccount);
-
-                    accountRepository.save(bankAccount);
-
-                    logger.info("После сохранения - " + bankAccount);
-
-                    personRepository.save(userFromDB.get());
-                    return true;
-                }
-            }
-        } catch (Exception e) {
-            logger.info("SaveAccount - " + e.getMessage(), e);
-        }
-        return false;
+    public List<BankAccountEntity> getNonEmptyAccounts() {
+        return accountRepository.findByAmountGreaterThan(BigDecimal.ZERO, Sort.by("id"));
     }
 
     public void getProfile(String username, Model model) {
@@ -74,6 +61,55 @@ public class BankAccountService {
         else
             model.addAttribute("errorMessage", "У вас нет счета. Для оформления счета нажмите кнопку <<Открыть новый счет>> ниже.");
     }
+
+    @Transactional
+    public void createNAccounts(int count, String username, BigDecimal starterAmount) {
+        Optional<PersonEntity> user = personRepository.findByUsername(username);
+
+        for (int i = 0; i < count; i++) {
+            if (user.isPresent()) {
+                BankAccountEntity bankAccount = new BankAccountEntity();
+
+                if (!generateAccountNumber(username).equals("-1")) {
+                    saveAccountWithCustomAccountNumber(username, user, bankAccount, starterAmount);
+                }
+            }
+        }
+    }
+
+
+    public boolean createBankAccount(String username) {
+        try {
+            Optional<PersonEntity> userFromDB = personRepository.findByUsername(username);
+
+            if (userFromDB.isPresent()) {
+                BankAccountEntity bankAccount = new BankAccountEntity();
+
+                if (!generateAccountNumber(username).equals("-1")) {
+                    saveAccountWithCustomAccountNumber(username, userFromDB, bankAccount, BigDecimal.valueOf(1000));
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            logger.info("SaveAccount - " + e.getMessage(), e);
+        }
+        return false;
+    }
+
+    private void saveAccountWithCustomAccountNumber(String username, Optional<PersonEntity> userFromDB, BankAccountEntity bankAccount, BigDecimal starterAmount) {
+        bankAccount.setNameNumber(generateAccountNumber(username));
+        bankAccount.setAmount(starterAmount);
+        bankAccount.setPersonId(userFromDB.get());
+
+        logger.info("До сохранения - " + bankAccount);
+
+        accountRepository.save(bankAccount);
+
+        logger.info("После сохранения - " + bankAccount);
+
+        personRepository.save(userFromDB.get());
+    }
+
 
     private String generateAccountNumber(String username) {
         int departmentCode = 12;
@@ -92,7 +128,7 @@ public class BankAccountService {
         accountCode = maxAccountCode + 1;
 
         String formattedUserCode = String.format("%04d", userCode);
-        String formattedAccountCode = String.format("%02d", accountCode);
+        String formattedAccountCode = String.format("%04d", accountCode);
 
         return String.valueOf(departmentCode) + formattedUserCode + formattedAccountCode;
     }
