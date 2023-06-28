@@ -77,7 +77,6 @@ public class BankAccountService {
         }
     }
 
-
     public boolean createBankAccount(String username) {
         try {
             Optional<PersonEntity> userFromDB = personRepository.findByUsername(username);
@@ -103,7 +102,7 @@ public class BankAccountService {
 
         logger.info("До сохранения - " + bankAccount);
 
-        accountRepository.save(bankAccount);
+        saveBankAccount(bankAccount);
 
         logger.info("После сохранения - " + bankAccount);
 

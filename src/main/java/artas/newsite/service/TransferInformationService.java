@@ -33,6 +33,13 @@ public class TransferInformationService {
                         + ", сумма " + amount);
                 fromAccount.takeValue(amount);
                 toAccount.putValue(amount);
+
+                bankAccountService.saveBankAccount(fromAccount);
+                bankAccountService.saveBankAccount(toAccount);
+                saveTransfer(new TransferInformationEntity(
+                        fromAccount.getNameNumber(),
+                        toAccount.getNameNumber(),
+                        amount));
             }
         } catch (Exception e) {
             logger.info("Ошибка в transferMoney " + e.getMessage());
@@ -57,11 +64,9 @@ public class TransferInformationService {
                     logger.info("Прошел проверку на средства " + fromAccount.getAmount());
 
                     try {
+                        logger.info("Перед сохранением - " + transferInformation);
                         transferMoney(fromAccount, toAccount, amount);
 
-                        logger.info("Перед сохранением - " + transferInformation);
-
-                        transferInformationRepository.save(transferInformation);
                         return true;
                     } catch (Exception e) {
                         logger.info("Произошла ошибка " + e.getMessage());
