@@ -1,5 +1,6 @@
 package artas.newsite.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -21,14 +22,17 @@ public class TransferInformationEntity {
     @Column(name = "id")
     private int id;
 
+    @JsonProperty("Сколько")
     @Positive(message = "Сумма перевода должна быть больше 0")
     @Column(name = "amount")
     private BigDecimal amount;
 
+    @JsonProperty("От")
     @NotBlank
     @Column(name = "fromaccount")
     private String fromAccountNumber;
 
+    @JsonProperty("Кому")
     @NotBlank(message = "Неверный номер получателя")
     @Size(min = 8, max = 10, message = "Счет получателя должен состоять из 10 цифр")
     @Column(name = "toaccount")

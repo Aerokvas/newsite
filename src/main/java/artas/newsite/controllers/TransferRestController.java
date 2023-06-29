@@ -22,4 +22,6 @@ public class TransferRestController {
     public List<TransferInformationEntity> getAllTransfers() {
         return transferInformationService.findAllInfo();
     }
+
+
 }

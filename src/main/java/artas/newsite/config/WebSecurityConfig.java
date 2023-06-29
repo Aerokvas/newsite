@@ -48,8 +48,8 @@ public class WebSecurityConfig {
                 )
                 .formLogin((form) -> form
                         .loginPage("/login")
-                        .usernameParameter("user")
-                        .passwordParameter("pass")
+                        .usernameParameter("username")
+                        .passwordParameter("password")
                         .defaultSuccessUrl("/home", true)
                         .permitAll()
                 )
