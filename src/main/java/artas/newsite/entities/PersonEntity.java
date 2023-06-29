@@ -23,7 +23,6 @@ public class PersonEntity {
     @Column(name = "id")
     private int id;
 
-    @NotNull
     @NotBlank(message = "Логин обязателен.")
     @Size(min=5, message = "Логин должен быть от 5 символов.")
     @Column(name = "login", unique = true)

@@ -91,6 +91,10 @@ public class TransferInformationService {
         return transferInformationRepository.findByFromAccountNumberOrToAccountNumber(nameNumber, nameNumber);
     }
 
+    public List<TransferInformationEntity> findAllInfo() {
+        return transferInformationRepository.findAll();
+    }
+
     public Page<TransferInformationEntity> getAllPagination(Pageable pageable) {
         return transferInformationRepository.findAll(pageable);
     }

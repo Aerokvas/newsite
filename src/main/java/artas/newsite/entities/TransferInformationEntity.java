@@ -21,23 +21,20 @@ public class TransferInformationEntity {
     @Column(name = "id")
     private int id;
 
-    @NotNull
     @Positive(message = "Сумма перевода должна быть больше 0")
     @Column(name = "amount")
     private BigDecimal amount;
 
-    @NotNull
     @NotBlank
     @Column(name = "fromaccount")
     private String fromAccountNumber;
 
-    @NotNull(message = "Неверный номер получателя")
     @NotBlank(message = "Неверный номер получателя")
     @Size(min = 8, max = 10, message = "Счет получателя должен состоять из 10 цифр")
     @Column(name = "toaccount")
     private String toAccountNumber;
 
-    public TransferInformationEntity(String fromAccountNumber, String toAccountNumber, BigDecimal amount) {
+    public TransferInformationEntity(@NotNull String fromAccountNumber, @NotNull String toAccountNumber, @NotNull BigDecimal amount) {
         this.fromAccountNumber = fromAccountNumber;
         this.toAccountNumber = toAccountNumber;
         this.amount = amount;
