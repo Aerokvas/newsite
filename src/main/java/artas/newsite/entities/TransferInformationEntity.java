@@ -22,11 +22,6 @@ public class TransferInformationEntity {
     @Column(name = "id")
     private int id;
 
-    @JsonProperty("Сколько")
-    @Positive(message = "Сумма перевода должна быть больше 0")
-    @Column(name = "amount")
-    private BigDecimal amount;
-
     @JsonProperty("От")
     @NotBlank
     @Column(name = "fromaccount")
@@ -37,6 +32,11 @@ public class TransferInformationEntity {
     @Size(min = 8, max = 10, message = "Счет получателя должен состоять из 10 цифр")
     @Column(name = "toaccount")
     private String toAccountNumber;
+
+    @JsonProperty("Сколько")
+    @Positive(message = "Сумма перевода должна быть больше 0")
+    @Column(name = "amount")
+    private BigDecimal amount;
 
     public TransferInformationEntity(@NotNull String fromAccountNumber, @NotNull String toAccountNumber, @NotNull BigDecimal amount) {
         this.fromAccountNumber = fromAccountNumber;

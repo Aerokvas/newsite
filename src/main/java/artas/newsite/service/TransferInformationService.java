@@ -87,6 +87,43 @@ public class TransferInformationService {
         }
     }
 
+    public boolean processTransferREST(TransferInformationEntity transferInformation) {
+        BankAccountEntity fromAccount = bankAccountService.getBankAccountByNameNumber(transferInformation.getFromAccountNumber());
+        BankAccountEntity toAccount = bankAccountService.getBankAccountByNameNumber(transferInformation.getToAccountNumber());
+
+        logger.info("Прием 1 - " + fromAccount + "; 2 - " + toAccount);
+
+        if (toAccount != null) {
+            BigDecimal amount = transferInformation.getAmount();
+
+            logger.info("Прошел проверку на получателя " + toAccount.getNameNumber());
+
+            if (!(fromAccount.getNameNumber().equals(toAccount.getNameNumber()))) {
+                logger.info("Прошел проверку на разные аккаунты " + fromAccount.getNameNumber() + "; " + toAccount.getNameNumber());
+
+                if (!(fromAccount.getAmount().compareTo(amount) < 0)) {
+                    logger.info("Прошел проверку на средства " + fromAccount.getAmount());
+
+                    try {
+                        logger.info("Перед сохранением - " + transferInformation);
+                        transferMoney(fromAccount, toAccount, amount);
+
+                        return true;
+                    } catch (Exception e) {
+                        logger.info("Произошла ошибка " + e.getMessage());
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
     public List<TransferInformationEntity> getAllTransactionWhereIsANameNumber(String nameNumber) {
         return transferInformationRepository.findByFromAccountNumberOrToAccountNumber(nameNumber, nameNumber);
     }
