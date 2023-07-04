@@ -14,8 +14,8 @@
     </thead>
     <tbody>
     <tr th:each="transfer : ${history}">
-        <td th:if="${transfer.fromAccountNumber == nameNumber}" th:class="${transfer.fromAccountNumber} ? 'sender' : ''" th:text="'Кому ' + ${transfer.toAccountNumber} + '    сколько -' + ${transfer.amount}"></td>
-        <td th:if="${transfer.toAccountNumber == nameNumber}" th:class="${transfer.toAccountNumber} ? 'recipient' : ''" th:text="'От ' + ${transfer.fromAccountNumber} + '    сколько +' + ${transfer.amount}"></td>
+        <td th:if="${transfer.fromAccount.nameNumber == nameNumber}" th:class="${transfer.fromAccount.nameNumber} ? 'sender' : ''" th:text="'Кому ' + ${transfer.toAccount.nameNumber} + '    сколько -' + ${transfer.amount}"></td>
+        <td th:if="${transfer.toAccount.nameNumber == nameNumber}" th:class="${transfer.toAccount.nameNumber} ? 'recipient' : ''" th:text="'От ' + ${transfer.fromAccount.nameNumber} + '    сколько +' + ${transfer.amount}"></td>
     </tr>
     </tbody>
 </table>

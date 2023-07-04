@@ -2,7 +2,6 @@ package artas.newsite.controllers;
 
 import artas.newsite.entities.BankAccountEntity;
 import artas.newsite.entities.TransferInformationEntity;
-import artas.newsite.repositories.TransferInformationRepository;
 import artas.newsite.service.BankAccountService;
 import artas.newsite.service.TransferInformationService;
 import jakarta.validation.Valid;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.security.Principal;
 import java.util.List;
@@ -23,16 +21,14 @@ import java.util.List;
 import static java.lang.System.out;
 
 @Controller
-public class AccountProfileController implements WebMvcConfigurer {
+public class AccountProfileController {
     private final BankAccountService bankAccountService;
     private final TransferInformationService transferInformationService;
-    private final TransferInformationRepository transferInformationRepository;
     private final Log logger = LogFactory.getLog(getClass());
 
-    public AccountProfileController(BankAccountService bankAccountService, TransferInformationService transferInformationService, TransferInformationRepository transferInformationRepository, TransferInformationRepository transferInformationRepository1) {
+    public AccountProfileController(BankAccountService bankAccountService, TransferInformationService transferInformationService) {
         this.bankAccountService = bankAccountService;
         this.transferInformationService = transferInformationService;
-        this.transferInformationRepository = transferInformationRepository1;
     }
 
     @GetMapping("/profile_account")
@@ -74,13 +70,16 @@ public class AccountProfileController implements WebMvcConfigurer {
 
     @PostMapping("/profile_account/transfer")
     public String processTransfer(@ModelAttribute("transferInformation") @Valid TransferInformationEntity transferInformation,
+                                  @RequestParam("fromAccount") String fromAccountNumber,
                                   Principal person, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             bankAccountService.getProfile(person.getName(), model);
             return "transfer";
         }
 
-        logger.info("Информация о переводе (post) " + transferInformation);
+        BankAccountEntity fromAccount = bankAccountService.getBankAccountByNameNumber(fromAccountNumber);
+        transferInformation.setFromAccount(fromAccount);
+        logger.info("Результат отправки: " + transferInformation);
 
         if (transferInformationService.processTransfer(transferInformation, model)) {
             bankAccountService.getProfile(person.getName(), model);

@@ -18,22 +18,21 @@ import java.util.List;
 @RestController
 public class TransferRestController {
     private final TransferInformationService transferInformationService;
-    private final BankAccountService bankAccountService;
     private final Log logger = LogFactory.getLog(getClass());
 
     @Autowired
-    public TransferRestController(TransferInformationService transferInformationService, BankAccountService bankAccountService) {
+    public TransferRestController(TransferInformationService transferInformationService) {
         this.transferInformationService = transferInformationService;
-        this.bankAccountService = bankAccountService;
     }
 
-    @GetMapping("/profile_account/api/transfer")
+    @GetMapping("/profile_account/api/v1/transfer")
     public List<TransferInformationEntity> getAllTransfers() {
         return transferInformationService.findAllInfo();
     }
 
-    @PostMapping("/profile_account/api/create_transfer")
-    public ResponseEntity<TransferInformationEntity> processTransfer(@RequestBody @Valid TransferInformationEntity transferInformation, BindingResult bindingResult) {
+    @PostMapping("/profile_account/api/v1/create_transfer")
+    public ResponseEntity<TransferInformationEntity> processTransfer(@RequestBody @Valid TransferInformationEntity transferInformation,
+                                                                     BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().build();
         }

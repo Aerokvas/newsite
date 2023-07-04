@@ -41,10 +41,12 @@ public class BankAccountEntity {
         amount = amount.add(value);
     }
 
+    @Override
     public String toString(){
         return "[" + getClass().getSimpleName() + "]"
                 + ": id - " + getId()
                 + "; nameNumber - " + getNameNumber()
+                + "; amount - " + getAmount()
                 + "; personId - " + getPersonId().getId();
     }
 }

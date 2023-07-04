@@ -22,31 +22,30 @@ public class TransferInformationEntity {
     @Column(name = "id")
     private int id;
 
-    @JsonProperty("От")
-    @NotBlank
-    @Column(name = "fromaccount")
-    private String fromAccountNumber;
+    @ManyToOne
+    @JoinColumn(name = "from_account_id")
+    private BankAccountEntity fromAccount;
 
-    @JsonProperty("Кому")
-    @NotBlank(message = "Неверный номер получателя")
-    @Size(min = 8, max = 10, message = "Счет получателя должен состоять из 10 цифр")
-    @Column(name = "toaccount")
+    @ManyToOne
+    @JoinColumn(name = "to_account_id")
+    private BankAccountEntity toAccount;
+
+    @Transient
     private String toAccountNumber;
 
-    @JsonProperty("Сколько")
     @Positive(message = "Сумма перевода должна быть больше 0")
     @Column(name = "amount")
     private BigDecimal amount;
 
-    public TransferInformationEntity(@NotNull String fromAccountNumber, @NotNull String toAccountNumber, @NotNull BigDecimal amount) {
-        this.fromAccountNumber = fromAccountNumber;
-        this.toAccountNumber = toAccountNumber;
+    public TransferInformationEntity(BankAccountEntity fromAccount, BankAccountEntity toAccount, BigDecimal amount) {
+        this.fromAccount = fromAccount;
+        this.toAccount = toAccount;
         this.amount = amount;
     }
 
-    public String toString(){
+    public String toString() {
         return "[" + getClass().getSimpleName() + "]" + ": id - " + getId()
-                + "; fromAccount - " + getFromAccountNumber()
+                + "; fromAccount - " + getFromAccount().getNameNumber()
                 + "; toAccount - " + getToAccountNumber()
                 + "; amount - " + getAmount();
     }

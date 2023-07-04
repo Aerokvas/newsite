@@ -36,10 +36,7 @@ public class TransferInformationService {
 
                 bankAccountService.saveBankAccount(fromAccount);
                 bankAccountService.saveBankAccount(toAccount);
-                saveTransfer(new TransferInformationEntity(
-                        fromAccount.getNameNumber(),
-                        toAccount.getNameNumber(),
-                        amount));
+                saveTransfer(new TransferInformationEntity(fromAccount, toAccount, amount));
             }
         } catch (Exception e) {
             logger.info("Ошибка в transferMoney " + e.getMessage());
@@ -47,13 +44,15 @@ public class TransferInformationService {
     }
 
     public boolean processTransfer(TransferInformationEntity transferInformation, Model model) {
-        BankAccountEntity fromAccount = bankAccountService.getBankAccountByNameNumber(transferInformation.getFromAccountNumber());
+        BankAccountEntity fromAccount = transferInformation.getFromAccount();
         BankAccountEntity toAccount = bankAccountService.getBankAccountByNameNumber(transferInformation.getToAccountNumber());
 
         logger.info("Прием 1 - " + fromAccount + "; 2 - " + toAccount);
 
-        if (toAccount != null) {
+        if (toAccount != null && fromAccount != null) {
             BigDecimal amount = transferInformation.getAmount();
+            transferInformation.setFromAccount(fromAccount);
+            transferInformation.setToAccount(toAccount);
 
             logger.info("Прошел проверку на получателя " + toAccount.getNameNumber());
 
@@ -88,12 +87,13 @@ public class TransferInformationService {
     }
 
     public boolean processTransferREST(TransferInformationEntity transferInformation) {
-        BankAccountEntity fromAccount = bankAccountService.getBankAccountByNameNumber(transferInformation.getFromAccountNumber());
+        BankAccountEntity fromAccount = transferInformation.getFromAccount();
         BankAccountEntity toAccount = bankAccountService.getBankAccountByNameNumber(transferInformation.getToAccountNumber());
+
 
         logger.info("Прием 1 - " + fromAccount + "; 2 - " + toAccount);
 
-        if (toAccount != null) {
+        if (toAccount != null && fromAccount != null) {
             BigDecimal amount = transferInformation.getAmount();
 
             logger.info("Прошел проверку на получателя " + toAccount.getNameNumber());
@@ -125,7 +125,7 @@ public class TransferInformationService {
     }
 
     public List<TransferInformationEntity> getAllTransactionWhereIsANameNumber(String nameNumber) {
-        return transferInformationRepository.findByFromAccountNumberOrToAccountNumber(nameNumber, nameNumber);
+        return transferInformationRepository.findByFromAccount_NameNumberOrToAccount_NameNumber(nameNumber, nameNumber);
     }
 
     public List<TransferInformationEntity> findAllInfo() {

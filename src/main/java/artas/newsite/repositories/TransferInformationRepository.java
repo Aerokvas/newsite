@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface TransferInformationRepository extends JpaRepository<TransferInformationEntity, Integer> {
-    List<TransferInformationEntity> findByFromAccountNumberOrToAccountNumber(String fromAccount, String toAccount);
+    List<TransferInformationEntity> findByFromAccount_NameNumberOrToAccount_NameNumber(String fromAccount, String toAccount);
 }

@@ -17,8 +17,8 @@
     </thead>
     <tbody>
     <tr th:each="transfer : ${transferPage.content}">
-        <td th:text="${transfer.fromAccountNumber}"></td>
-        <td th:text="${transfer.toAccountNumber}"></td>
+        <td th:text="${transfer.fromAccount.nameNumber}"></td>
+        <td th:text="${transfer.toAccount.nameNumber}"></td>
         <td th:text="${transfer.amount}"></td>
     </tr>
     </tbody>
