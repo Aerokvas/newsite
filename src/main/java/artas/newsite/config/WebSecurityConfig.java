@@ -41,10 +41,10 @@ public class WebSecurityConfig {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/registration/**").permitAll()
+                        .requestMatchers("/", "/registration/**", "/console").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/home/**", "/profile_account/**").hasAnyRole("USER", "ADMIN")
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .formLogin((form) -> form
                         .loginPage("/login")
@@ -54,7 +54,8 @@ public class WebSecurityConfig {
                         .permitAll()
                 )
                 .logout(LogoutConfigurer::permitAll)
-                .authenticationManager(authenticationManager);
+                .authenticationManager(authenticationManager)
+                .headers().frameOptions().disable();
         return http.build();
     }
 

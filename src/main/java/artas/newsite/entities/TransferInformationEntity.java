@@ -15,26 +15,26 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Entity
-@Table(name = "transfer_information", schema = "public", catalog = "BanksDb")
+@Table(name = "TRANSFER_INFORMATION", schema = "PUBLIC", catalog = "BANKSDB")
 public class TransferInformationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "id")
+    @Column(name = "ID")
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "from_account_id")
+    @JoinColumn(name = "FROM_ACCOUNT_ID")
     private BankAccountEntity fromAccount;
 
     @ManyToOne
-    @JoinColumn(name = "to_account_id")
+    @JoinColumn(name = "TO_ACCOUNT_ID")
     private BankAccountEntity toAccount;
 
     @Transient
     private String toAccountNumber;
 
     @Positive(message = "Сумма перевода должна быть больше 0")
-    @Column(name = "amount")
+    @Column(name = "AMOUNT")
     private BigDecimal amount;
 
     public TransferInformationEntity(BankAccountEntity fromAccount, BankAccountEntity toAccount, BigDecimal amount) {

@@ -15,22 +15,22 @@ import java.util.*;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Entity
-@Table(name = "bank_account", schema = "public", catalog = "BanksDb")
+@Table(name = "BANK_ACCOUNT", schema = "PUBLIC", catalog = "BANKSDB")
 public class BankAccountEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "id")
+    @Column(name = "ID")
     private int id;
 
     @Size(min = 8, max = 10)
-    @Column(name = "name_number")
+    @Column(name = "NAME_NUMBER")
     private String nameNumber;
 
-    @Column(name = "amount")
+    @Column(name = "AMOUNT")
     private BigDecimal amount;
 
     @ManyToOne
-    @JoinColumn(name = "person_id")
+    @JoinColumn(name = "PERSON_ID")
     private PersonEntity personId;
 
     public synchronized void takeValue(BigDecimal value) {

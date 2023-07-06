@@ -16,21 +16,21 @@ import java.util.*;
 @AllArgsConstructor
 //@EqualsAndHashCode
 @Entity
-@Table(name = "person", schema = "public", catalog = "BanksDb")
+@Table(name = "PERSON", schema = "PUBLIC", catalog = "BANKSDB")
 public class PersonEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "ID")
     private int id;
 
     @NotBlank(message = "Логин обязателен.")
     @Size(min=5, message = "Логин должен быть от 5 символов.")
-    @Column(name = "login", unique = true)
+    @Column(name = "LOGIN", unique = true)
     private String username;
 
     @NotBlank(message = "Пароль обязателен.")
     @Size(min=5, message = "Пароль должен быть от 5 символов.")
-    @Column(name = "password")
+    @Column(name = "PASSWORD")
     private String password;
 
    /* @NotNull
@@ -38,7 +38,6 @@ public class PersonEntity {
     @NotBlank(message = "Повторный пароль обязателен.")*/
     @Transient
     private String confirmPassword;
-
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PersonRoleEntity> personRoles = new HashSet<>();

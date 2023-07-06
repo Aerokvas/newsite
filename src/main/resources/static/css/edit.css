@@ -69,7 +69,7 @@ th {
 }
 
 .navbar{
-    background: #00bff9;
+    background: #abeaff;
 }
 
 .nav-link , .navbar-brand{
@@ -82,8 +82,8 @@ th {
 }
 
 .nav-link:hover{
-    background: #007698;
-    color: #00bff9;
+    background: #abeaff;
+    color: #abeaff;
 }
 
 .navbar-collapse{

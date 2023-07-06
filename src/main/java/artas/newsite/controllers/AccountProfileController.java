@@ -79,6 +79,7 @@ public class AccountProfileController {
 
         BankAccountEntity fromAccount = bankAccountService.getBankAccountByNameNumber(fromAccountNumber);
         transferInformation.setFromAccount(fromAccount);
+
         logger.info("Результат отправки: " + transferInformation);
 
         if (transferInformationService.processTransfer(transferInformation, model)) {

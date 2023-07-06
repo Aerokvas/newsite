@@ -16,15 +16,15 @@ import java.util.Set;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Entity
-@Table(name = "role", schema = "public", catalog = "BanksDb")
+@Table(name = "ROLE", schema = "PUBLIC", catalog = "BANKSDB")
 public class RoleEntity  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "ID")
     private int id;
 
     @Basic
-    @Column(name = "name")
+    @Column(name = "NAME")
     private String name;
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL)

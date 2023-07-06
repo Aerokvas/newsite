@@ -14,17 +14,17 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "person_role", schema = "public", catalog = "BanksDb")
+@Table(name = "PERSON_ROLE", schema = "PUBLIC", catalog = "BANKSDB")
 public class PersonRoleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "ID")
     private int id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "person_id")
+    @JoinColumn(name = "PERSON_ID")
     private PersonEntity person;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id")
+    @JoinColumn(name = "ROLE_ID")
     private RoleEntity role;
 
     @Override
