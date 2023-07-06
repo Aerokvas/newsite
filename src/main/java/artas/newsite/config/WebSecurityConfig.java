@@ -41,10 +41,11 @@ public class WebSecurityConfig {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/registration/**", "/console").permitAll()
+                        .requestMatchers("/", "/registration/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/home/**", "/profile_account/**").hasAnyRole("USER", "ADMIN")
-                        .anyRequest().permitAll()
+                        .requestMatchers("/console/**").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
                         .loginPage("/login")

@@ -73,7 +73,7 @@ th {
 }
 
 .nav-link , .navbar-brand{
-    color: rgb(255, 255, 255);
+    color: #3a3a3a;
     cursor: pointer;
 }
 
@@ -83,7 +83,7 @@ th {
 
 .nav-link:hover{
     background: #abeaff;
-    color: #abeaff;
+    color: #3a3a3a;
 }
 
 .navbar-collapse{
@@ -91,5 +91,9 @@ th {
 }
 
 .navbar-toggler{
-    background:#fff !important;
+    background: #000000 !important;
+}
+
+.content {
+    margin-top: 100px;
 }
