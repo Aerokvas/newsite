@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
@@ -38,14 +39,24 @@ public class WebSecurityConfig {
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
         http
-                .csrf()
-                .disable()
-                .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/registration/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/home/**", "/profile_account/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/console/**").permitAll()
-                        .anyRequest().authenticated()
+                .csrf((csrf) -> csrf
+                            .ignoringRequestMatchers(AntPathRequestMatcher.antMatcher("/console/**"))
+                            .disable()
+                )
+                .authorizeHttpRequests((requests) -> {
+                            try {
+                                requests
+                                        .requestMatchers("/", "/registration/**").permitAll()
+                                        .requestMatchers(AntPathRequestMatcher.antMatcher("/console/**")).permitAll()
+                                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                                        .requestMatchers("/home/**", "/profile_account/**").hasAnyRole("USER", "ADMIN")
+                                        .anyRequest().authenticated()
+                                        .and()
+                                        .headers().frameOptions().sameOrigin();
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
                 )
                 .formLogin((form) -> form
                         .loginPage("/login")
@@ -55,8 +66,7 @@ public class WebSecurityConfig {
                         .permitAll()
                 )
                 .logout(LogoutConfigurer::permitAll)
-                .authenticationManager(authenticationManager)
-                .headers().frameOptions().disable();
+                .authenticationManager(authenticationManager);
         return http.build();
     }
 
