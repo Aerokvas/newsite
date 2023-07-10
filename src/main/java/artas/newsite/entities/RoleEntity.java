@@ -1,13 +1,13 @@
 package artas.newsite.entities;
 
+import artas.newsite.repositories.RoleRepository;
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 

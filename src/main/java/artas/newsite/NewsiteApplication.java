@@ -1,7 +1,9 @@
 package artas.newsite;
 
 import artas.newsite.config.Config;
+import artas.newsite.entities.RoleEntity;
 import artas.newsite.entities.WeekDay;
+import artas.newsite.repositories.RoleRepository;
 import artas.newsite.service.BankAccountService;
 import artas.newsite.service.PersonService;
 import artas.newsite.service.TransferInformationService;
@@ -13,8 +15,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import java.math.BigDecimal;
-
 import static java.lang.System.out;
 
 @SpringBootApplication
@@ -23,24 +23,37 @@ public class NewsiteApplication implements CommandLineRunner {
     private final TransferInformationService transferInformationService;
     private final BankAccountService bankAccountService;
     private final PersonService personService;
+    private final RoleRepository roleRepository;
     private final Log logger = LogFactory.getLog(getClass());
 
-    public NewsiteApplication(TransferInformationService transferInformationService, BankAccountService bankAccountService, PersonService personService) {
+    public NewsiteApplication(TransferInformationService transferInformationService, BankAccountService bankAccountService, PersonService personService, RoleRepository roleRepository) {
         this.transferInformationService = transferInformationService;
         this.bankAccountService = bankAccountService;
         this.personService = personService;
+        this.roleRepository = roleRepository;
     }
 
     public static void main(String[] args) {
         SpringApplication.run(NewsiteApplication.class, args);
         ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
-
         WeekDay weekDay = context.getBean(WeekDay.class);
         out.println("Сегодня " + weekDay.getNameWeekDay());
     }
 
+    private void initializeData() {
+        RoleEntity userRole = new RoleEntity();
+        userRole.setName("ROLE_USER");
+
+        RoleEntity adminRole = new RoleEntity();
+        adminRole.setName("ROLE_ADMIN");
+
+        roleRepository.save(userRole);
+        roleRepository.save(adminRole);
+    }
+
     @Override
     public void run(String... args) throws Exception {
+        initializeData();
         //bankAccountService.createNAccounts(5, "artas@mail.ru", BigDecimal.valueOf(5000000));
         /*List<BankAccountEntity> emptyAccounts = bankAccountService.getEmptyAccounts();
 
