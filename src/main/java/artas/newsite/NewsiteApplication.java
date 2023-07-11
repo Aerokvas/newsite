@@ -53,7 +53,7 @@ public class NewsiteApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        initializeData();
+        //initializeData();
         //bankAccountService.createNAccounts(5, "artas@mail.ru", BigDecimal.valueOf(5000000));
         /*List<BankAccountEntity> emptyAccounts = bankAccountService.getEmptyAccounts();
 
